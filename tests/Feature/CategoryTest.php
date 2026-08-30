@@ -91,7 +91,7 @@ test('authenticated user can create a category', function () {
             ],
         ]);
 
-    $this->assertDatabaseHas('tb_songcategory', [
+    $this->assertDatabaseHas('categories', [
         'songcategoryname' => 'Jazz',
     ]);
 });
@@ -149,7 +149,7 @@ test('authenticated user can update a category', function () {
             ],
         ]);
 
-    $this->assertDatabaseHas('tb_songcategory', [
+    $this->assertDatabaseHas('categories', [
         'songcategoryid' => $category->songcategoryid,
         'songcategoryname' => 'Blues Rock',
     ]);
@@ -204,7 +204,7 @@ test('authenticated user can delete a category', function () {
             'message' => 'Category deleted successfully',
         ]);
 
-    $this->assertDatabaseMissing('tb_songcategory', [
+    $this->assertDatabaseMissing('categories', [
         'songcategoryid' => $category->songcategoryid,
     ]);
 });

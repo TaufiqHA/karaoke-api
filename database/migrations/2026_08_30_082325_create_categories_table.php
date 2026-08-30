@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_songcategory', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->increments('songcategoryid');
             $table->string('songcategoryname', 255)->unique();
             $table->timestamps();
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tb_songcategory');
+        Schema::dropIfExists('categories');
     }
 };

@@ -33,7 +33,7 @@ class CategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'songcategoryname' => ['required', 'string', 'max:255', 'unique:tb_songcategory,songcategoryname'],
+            'songcategoryname' => ['required', 'string', 'max:255', 'unique:categories,songcategoryname'],
         ]);
 
         $category = Category::create($validated);
@@ -64,7 +64,7 @@ class CategoryController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tb_songcategory', 'songcategoryname')->ignore($category->songcategoryid, 'songcategoryid'),
+                Rule::unique('categories', 'songcategoryname')->ignore($category->songcategoryid, 'songcategoryid'),
             ],
         ]);
 

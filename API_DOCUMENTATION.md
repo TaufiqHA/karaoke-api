@@ -1,6 +1,6 @@
 # Dokumentasi API Backend (Laravel Sanctum) & Panduan Integrasi Flutter
 
-Dokumentasi ini menyediakan spesifikasi teknis endpoint API autentikasi dan master kategori lagu (`tb_songcategory`) serta panduan lengkap dan contoh kode Dart/Flutter untuk mengintegrasikan backend ini ke dalam aplikasi Flutter Anda.
+Dokumentasi ini menyediakan spesifikasi teknis endpoint API autentikasi dan master kategori lagu (`categories`) serta panduan lengkap dan contoh kode Dart/Flutter untuk mengintegrasikan backend ini ke dalam aplikasi Flutter Anda.
 
 ---
 
@@ -262,7 +262,7 @@ Content-Type: application/json
 
 ### F. Master Kategori Lagu (Song Categories)
 
-Mengelola data kategori atau genre lagu (`tb_songcategory`). Endpoint pembacaan data bersifat publik, sedangkan operasi penambahan, perubahan, dan penghapusan memerlukan otentikasi Sanctum (`Bearer <access_token>`).
+Mengelola data kategori atau genre lagu (`categories`). Endpoint pembacaan data bersifat publik, sedangkan operasi penambahan, perubahan, dan penghapusan memerlukan otentikasi Sanctum (`Bearer <access_token>`).
 
 ---
 
@@ -481,6 +481,228 @@ Accept: application/json
 ```json
 {
   "message": "Unauthenticated."
+}
+```
+
+---
+
+### G. Master Katalog Lagu (Songs)
+
+Mengelola data katalog lagu karaoke (`tb_songs`). Endpoint pembacaan data bersifat publik, sedangkan operasi penambahan, perubahan, dan penghapusan memerlukan otentikasi Sanctum (`Bearer <access_token>`).
+
+---
+
+#### 1. Daftar Lagu (List Songs)
+Mengambil daftar lagu karaoke. Mendukung pencarian judul lagu atau penyanyi, filter berdasarkan kategori, serta pagination.
+
+- **URL**: `/songs`
+- **Method**: `GET`
+- **Autentikasi**: Tidak ada (Publik)
+- **Query Parameter (Opsional)**:
+  - `search` (string): Mencari lagu berdasarkan kecocokan judul (`songtitle`) atau penyanyi (`songsinger`). Contoh: `/songs?search=Separuh`
+  - `songcategory` / `category_id` (integer): Memfilter lagu berdasarkan ID kategori. Contoh: `/songs?songcategory=1`
+  - `page` (integer): Nomor halaman untuk mode pagination. Contoh: `/songs?page=1&per_page=10`
+  - `per_page` (integer): Jumlah item per halaman jika menggunakan pagination (default: 15).
+
+##### Request Header
+```http
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK - Tanpa pagination)
+```json
+{
+  "data": [
+    {
+      "songid": 1,
+      "songtitle": "Separuh Nafas",
+      "songsinger": "Dewa 19",
+      "songurl": "https://storage.example.com/karaoke/separuh-nafas.mp4",
+      "songcategory": 1,
+      "songnada": "Am",
+      "songduration": "4:30",
+      "created_at": "2026-08-30T17:28:07.000000Z",
+      "updated_at": "2026-08-30T17:28:07.000000Z",
+      "category": {
+        "songcategoryid": 1,
+        "songcategoryname": "Pop",
+        "created_at": "2026-08-30T08:23:25.000000Z",
+        "updated_at": "2026-08-30T08:23:25.000000Z"
+      }
+    }
+  ]
+}
+```
+
+---
+
+#### 2. Detail Lagu (Show Song)
+Mengambil detail satu lagu berdasarkan ID lagu (`songid`).
+
+- **URL**: `/songs/{id}` *(contoh: `/songs/1`)*
+- **Method**: `GET`
+- **Autentikasi**: Tidak ada (Publik)
+
+##### Request Header
+```http
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "data": {
+    "songid": 1,
+    "songtitle": "Separuh Nafas",
+    "songsinger": "Dewa 19",
+    "songurl": "https://storage.example.com/karaoke/separuh-nafas.mp4",
+    "songcategory": 1,
+    "songnada": "Am",
+    "songduration": "4:30",
+    "created_at": "2026-08-30T17:28:07.000000Z",
+    "updated_at": "2026-08-30T17:28:07.000000Z",
+    "category": {
+      "songcategoryid": 1,
+      "songcategoryname": "Pop",
+      "created_at": "2026-08-30T08:23:25.000000Z",
+      "updated_at": "2026-08-30T08:23:25.000000Z"
+    }
+  }
+}
+```
+
+##### Respons Tidak Ditemukan (404 Not Found)
+```json
+{
+  "message": "No query results for model [App\\Models\\Song] 999"
+}
+```
+
+---
+
+#### 3. Tambah Lagu Baru (Create Song)
+Menambahkan data katalog lagu baru ke dalam sistem.
+
+- **URL**: `/songs`
+- **Method**: `POST`
+- **Autentikasi**: `Bearer <access_token>`
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Content-Type: application/json
+Accept: application/json
+```
+
+##### Request Body
+```json
+{
+  "songtitle": "Hati-Hati di Jalan",
+  "songsinger": "Tulus",
+  "songurl": "https://storage.example.com/karaoke/hati-hati-di-jalan.mp4",
+  "songcategory": 1,
+  "songnada": "C",
+  "songduration": "4:02"
+}
+```
+
+##### Parameter Body
+| Field | Tipe | Wajib | Keterangan |
+|---|---|---|---|
+| `songtitle` | string | Ya | Judul lagu (maksimal 255 karakter). |
+| `songsinger` | string | Ya | Nama penyanyi/artis (maksimal 255 karakter). |
+| `songurl` | string | Ya | URL file video/audio karaoke. |
+| `songcategory` | integer | Ya | ID kategori (harus ada di tabel `categories`). |
+| `songnada` | string | Tidak | Nada dasar lagu (maksimal 10 karakter, contoh: `C`, `Am`). |
+| `songduration` | string | Tidak | Durasi lagu (maksimal 5 karakter, contoh: `4:02`). |
+
+##### Respons Berhasil (201 Created)
+```json
+{
+  "message": "Song created successfully",
+  "data": {
+    "songid": 2,
+    "songtitle": "Hati-Hati di Jalan",
+    "songsinger": "Tulus",
+    "songurl": "https://storage.example.com/karaoke/hati-hati-di-jalan.mp4",
+    "songcategory": 1,
+    "songnada": "C",
+    "songduration": "4:02",
+    "created_at": "2026-08-30T17:35:00.000000Z",
+    "updated_at": "2026-08-30T17:35:00.000000Z",
+    "category": {
+      "songcategoryid": 1,
+      "songcategoryname": "Pop"
+    }
+  }
+}
+```
+
+---
+
+#### 4. Perbarui Lagu (Update Song)
+Memperbarui data lagu yang sudah ada. Mendukung method `PUT` (update penuh) atau `PATCH` (update sebagian).
+
+- **URL**: `/songs/{id}` *(contoh: `/songs/2`)*
+- **Method**: `PUT` atau `PATCH`
+- **Autentikasi**: `Bearer <access_token>`
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Content-Type: application/json
+Accept: application/json
+```
+
+##### Request Body (Contoh Partial Update via PATCH)
+```json
+{
+  "songnada": "D",
+  "songduration": "4:05"
+}
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "Song updated successfully",
+  "data": {
+    "songid": 2,
+    "songtitle": "Hati-Hati di Jalan",
+    "songsinger": "Tulus",
+    "songurl": "https://storage.example.com/karaoke/hati-hati-di-jalan.mp4",
+    "songcategory": 1,
+    "songnada": "D",
+    "songduration": "4:05",
+    "created_at": "2026-08-30T17:35:00.000000Z",
+    "updated_at": "2026-08-30T17:40:00.000000Z",
+    "category": {
+      "songcategoryid": 1,
+      "songcategoryname": "Pop"
+    }
+  }
+}
+```
+
+---
+
+#### 5. Hapus Lagu (Delete Song)
+Menghapus lagu dari sistem berdasarkan ID.
+
+- **URL**: `/songs/{id}` *(contoh: `/songs/2`)*
+- **Method**: `DELETE`
+- **Autentikasi**: `Bearer <access_token>`
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "Song deleted successfully"
 }
 ```
 
