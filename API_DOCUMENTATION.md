@@ -708,6 +708,413 @@ Accept: application/json
 
 ---
 
+### H. Kelola Pengguna (Admin User Management)
+
+Endpoint untuk mengelola akun pengguna (`users`). Seluruh endpoint di bawah ini dilindungi oleh middleware `auth:sanctum` dan middleware `admin`. Pengguna dengan role `user` akan ditolak dengan respons `403 Forbidden`.
+
+---
+
+#### 1. Daftar Pengguna (List Users)
+Mengambil daftar pengguna yang terdaftar pada sistem. Mendukung pencarian berdasarkan nama, username, atau email, pemfilteran berdasarkan role, serta pagination.
+
+- **URL**: `/admin/users`
+- **Method**: `GET`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+- **Query Parameter (Opsional)**:
+  - `search` (string): Mencari user berdasarkan kecocokan nama (`name`), username (`username`), atau email (`email`). Contoh: `/admin/users?search=john`
+  - `role` (string): Memfilter user berdasarkan peran (`admin` atau `user`). Contoh: `/admin/users?role=user`
+  - `page` (integer): Nomor halaman untuk mode pagination. Contoh: `/admin/users?page=1&per_page=15`
+  - `per_page` (integer): Jumlah item per halaman (default: 15).
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK - Tanpa pagination)
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Administrator",
+      "username": "admin",
+      "email": "admin@example.com",
+      "role": "admin",
+      "email_verified_at": "2026-08-31T00:00:00.000000Z",
+      "created_at": "2026-08-31T00:00:00.000000Z",
+      "updated_at": "2026-08-31T00:00:00.000000Z"
+    },
+    {
+      "id": 2,
+      "name": "John Doe",
+      "username": "johndoe",
+      "email": "john@example.com",
+      "role": "user",
+      "email_verified_at": null,
+      "created_at": "2026-08-31T01:00:00.000000Z",
+      "updated_at": "2026-08-31T01:00:00.000000Z"
+    }
+  ]
+}
+```
+
+##### Respons Akses Ditolak Bukan Admin (403 Forbidden)
+```json
+{
+  "message": "Forbidden. Admin access required."
+}
+```
+
+---
+
+#### 2. Tambah Pengguna Baru (Create User)
+Mendaftarkan pengguna baru secara langsung oleh admin tanpa perlu proses registrasi publik.
+
+- **URL**: `/admin/users`
+- **Method**: `POST`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Content-Type: application/json
+Accept: application/json
+```
+
+##### Request Body
+| Field | Tipe Data | Wajib/Opsional | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `name` | string | Wajib | Nama lengkap pengguna (maks. 255 karakter) |
+| `username` | string | Wajib | Username unik untuk login (maks. 255 karakter) |
+| `email` | string | Wajib | Alamat email unik dan valid |
+| `password` | string | Wajib | Password pengguna (min. 8 karakter) |
+| `role` | string | Wajib | Peran pengguna: `"admin"` atau `"user"` |
+
+```json
+{
+  "name": "Operator Baru",
+  "username": "operator1",
+  "email": "operator1@example.com",
+  "password": "securepassword123",
+  "role": "user"
+}
+```
+
+##### Respons Berhasil (201 Created)
+```json
+{
+  "message": "User created successfully",
+  "data": {
+    "id": 3,
+    "name": "Operator Baru",
+    "username": "operator1",
+    "email": "operator1@example.com",
+    "role": "user",
+    "created_at": "2026-08-31T02:00:00.000000Z",
+    "updated_at": "2026-08-31T02:00:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 3. Detail Pengguna (Show User)
+Mengambil informasi lengkap satu pengguna berdasarkan ID.
+
+- **URL**: `/admin/users/{id}` *(contoh: `/admin/users/2`)*
+- **Method**: `GET`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "data": {
+    "id": 2,
+    "name": "John Doe",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "role": "user",
+    "email_verified_at": null,
+    "created_at": "2026-08-31T01:00:00.000000Z",
+    "updated_at": "2026-08-31T01:00:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 4. Perbarui Pengguna (Update User)
+Memperbarui informasi nama, username, email, role, atau mereset password pengguna.
+
+- **URL**: `/admin/users/{id}` *(contoh: `/admin/users/2`)*
+- **Method**: `PUT` atau `PATCH`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Content-Type: application/json
+Accept: application/json
+```
+
+##### Request Body
+| Field | Tipe Data | Wajib/Opsional | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `name` | string | Opsional | Nama lengkap baru pengguna |
+| `username` | string | Opsional | Username baru (harus unik kecuali milik user sendiri) |
+| `email` | string | Opsional | Email baru (harus unik kecuali milik user sendiri) |
+| `role` | string | Opsional | Peran baru: `"admin"` atau `"user"` |
+| `password` | string | Opsional | Password baru (min. 8 karakter). Kosongkan jika tidak ingin mengubah password |
+
+```json
+{
+  "name": "Johnathan Doe",
+  "role": "admin"
+}
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "User updated successfully",
+  "data": {
+    "id": 2,
+    "name": "Johnathan Doe",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "role": "admin",
+    "created_at": "2026-08-31T01:00:00.000000Z",
+    "updated_at": "2026-08-31T02:15:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 5. Hapus Pengguna (Delete User)
+Menghapus akun pengguna dari sistem beserta seluruh token aksesnya.
+
+> [!CAUTION]
+> Admin tidak dapat menghapus akun miliknya sendiri yang sedang digunakan (`self-deletion protection`). Jika dicoba, sistem akan mengembalikan status `403 Forbidden`.
+
+- **URL**: `/admin/users/{id}` *(contoh: `/admin/users/2`)*
+- **Method**: `DELETE`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+##### Respons Gagal Hapus Akun Sendiri (403 Forbidden)
+```json
+{
+  "message": "You cannot delete your own account"
+}
+```
+
+---
+
+### I. Konfigurasi Aplikasi & Iklan (Settings / Application Config)
+
+Mengelola informasi nama aplikasi, perusahaan, serta konfigurasi banner dan iklan (`tb_application`).
+- **Endpoint Publik (`/settings`)**: Dapat diakses tanpa autentikasi agar aplikasi Flutter dapat langsung mengambil konfigurasi saat inisialisasi / splash screen.
+- **Endpoint Admin (`/admin/settings`)**: Membutuhkan autentikasi `Bearer <access_token>` dan hak akses `admin` untuk membaca atau memodifikasi konfigurasi.
+
+---
+
+#### 1. Ambil Konfigurasi Aplikasi (Get Settings - Publik)
+Mengambil data konfigurasi aplikasi dan iklan yang sedang aktif.
+
+- **URL**: `/settings`
+- **Method**: `GET`
+- **Autentikasi**: Tidak ada (Publik)
+
+##### Request Header
+```http
+Accept: application/json
+```
+
+##### Respons Berhasil (200 OK - Pengaturan Ditemukan)
+```json
+{
+  "data": {
+    "applicationid": 1,
+    "applicationcompany": "PT Karaoke Digital Nusantara",
+    "applicationname": "Karaoke Family Station",
+    "applicationads1": "https://storage.example.com/ads/banner1.jpg",
+    "applicationads2": "https://storage.example.com/ads/banner2.jpg",
+    "applicationadsactive": "Y",
+    "applicationadsbottom": "https://storage.example.com/ads/banner_bottom.jpg",
+    "applicationadsbottomactive": "Y",
+    "created_at": "2026-08-31T17:00:00.000000Z",
+    "updated_at": "2026-08-31T17:00:00.000000Z"
+  }
+}
+```
+
+##### Respons Berhasil (200 OK - Belum Dikonfigurasi)
+```json
+{
+  "data": null
+}
+```
+
+---
+
+#### 2. Simpan / Perbarui Pengaturan Aplikasi (Admin Upsert Settings)
+Menyimpan konfigurasi baru atau memperbarui konfigurasi yang sedang aktif.
+
+- **URL**: `/admin/settings`
+- **Method**: `POST` atau `PUT` / `PATCH`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Header
+```http
+Authorization: Bearer 1|AbCdEf1234567890...
+Content-Type: application/json
+Accept: application/json
+```
+
+##### Request Body
+| Field | Tipe Data | Wajib/Opsional | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `applicationcompany` | string | Wajib (baru) / Opsional (update) | Nama perusahaan pengelola (maks. 100 karakter) |
+| `applicationname` | string | Wajib (baru) / Opsional (update) | Nama aplikasi karaoke (maks. 255 karakter) |
+| `applicationads1` | string | Opsional | URL gambar iklan atau banner 1 |
+| `applicationads2` | string | Opsional | URL gambar iklan atau banner 2 |
+| `applicationadsactive` | string | Opsional | Status aktif banner atas (`"Y"` atau `"N"`, default: `"Y"`) |
+| `applicationadsbottom` | string | Opsional | URL gambar iklan bottom banner |
+| `applicationadsbottomactive` | string | Opsional | Status aktif bottom banner (`"Y"` atau `"N"`, default: `"Y"`) |
+
+```json
+{
+  "applicationcompany": "PT Karaoke Digital Nusantara",
+  "applicationname": "Karaoke Family Station",
+  "applicationads1": "https://storage.example.com/ads/banner1.jpg",
+  "applicationads2": "https://storage.example.com/ads/banner2.jpg",
+  "applicationadsactive": "Y",
+  "applicationadsbottom": "https://storage.example.com/ads/banner_bottom.jpg",
+  "applicationadsbottomactive": "Y"
+}
+```
+
+##### Respons Berhasil (200 OK / 201 Created)
+```json
+{
+  "message": "Settings updated successfully",
+  "data": {
+    "applicationid": 1,
+    "applicationcompany": "PT Karaoke Digital Nusantara",
+    "applicationname": "Karaoke Family Station",
+    "applicationads1": "https://storage.example.com/ads/banner1.jpg",
+    "applicationads2": "https://storage.example.com/ads/banner2.jpg",
+    "applicationadsactive": "Y",
+    "applicationadsbottom": "https://storage.example.com/ads/banner_bottom.jpg",
+    "applicationadsbottomactive": "Y",
+    "created_at": "2026-08-31T17:00:00.000000Z",
+    "updated_at": "2026-08-31T17:15:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 3. Detail Pengaturan Berdasarkan ID (Show Setting by ID)
+Mengambil data record pengaturan aplikasi spesifik berdasarkan `applicationid`.
+
+- **URL**: `/admin/settings/{id}` *(contoh: `/admin/settings/1`)*
+- **Method**: `GET`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "data": {
+    "applicationid": 1,
+    "applicationcompany": "PT Karaoke Digital Nusantara",
+    "applicationname": "Karaoke Family Station",
+    "applicationads1": "https://storage.example.com/ads/banner1.jpg",
+    "applicationads2": "https://storage.example.com/ads/banner2.jpg",
+    "applicationadsactive": "Y",
+    "applicationadsbottom": "https://storage.example.com/ads/banner_bottom.jpg",
+    "applicationadsbottomactive": "Y",
+    "created_at": "2026-08-31T17:00:00.000000Z",
+    "updated_at": "2026-08-31T17:15:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 4. Perbarui Pengaturan Berdasarkan ID (Update Setting by ID)
+Mengupdate record pengaturan aplikasi tertentu.
+
+- **URL**: `/admin/settings/{id}` *(contoh: `/admin/settings/1`)*
+- **Method**: `PUT` atau `PATCH`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Request Body
+```json
+{
+  "applicationname": "Karaoke Super App",
+  "applicationadsactive": "N"
+}
+```
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "Settings updated successfully",
+  "data": {
+    "applicationid": 1,
+    "applicationcompany": "PT Karaoke Digital Nusantara",
+    "applicationname": "Karaoke Super App",
+    "applicationads1": "https://storage.example.com/ads/banner1.jpg",
+    "applicationads2": "https://storage.example.com/ads/banner2.jpg",
+    "applicationadsactive": "N",
+    "applicationadsbottom": "https://storage.example.com/ads/banner_bottom.jpg",
+    "applicationadsbottomactive": "Y",
+    "created_at": "2026-08-31T17:00:00.000000Z",
+    "updated_at": "2026-08-31T17:20:00.000000Z"
+  }
+}
+```
+
+---
+
+#### 5. Hapus Pengaturan (Delete Setting)
+Menghapus konfigurasi aplikasi dari database.
+
+- **URL**: `/admin/settings/{id}` *(contoh: `/admin/settings/1`)*
+- **Method**: `DELETE`
+- **Autentikasi**: `Bearer <access_token>` (Harus Role Admin)
+
+##### Respons Berhasil (200 OK)
+```json
+{
+  "message": "Settings deleted successfully"
+}
+```
+
+---
+
 ## 3. Contoh Implementasi di Flutter (Dart)
 
 Berikut adalah contoh implementasi lengkap yang dapat langsung Anda gunakan pada project Flutter.
