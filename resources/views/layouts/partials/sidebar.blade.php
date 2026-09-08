@@ -34,25 +34,27 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="#" class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-base font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors">
+            <a href="{{ route('admin.songs.index') }}" 
+               class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-base font-medium transition-colors {{ request()->routeIs('admin.songs.*') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200' }}">
                 <div class="flex items-center gap-3">
-                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <svg class="h-5 w-5 {{ request()->routeIs('admin.songs.*') ? 'text-white' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.633 2.163l-1.319.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
                     </svg>
                     <span>Lagu</span>
                 </div>
-                <span class="text-xs text-slate-400 font-mono">{{ $stats['total_songs'] ?? '' }}</span>
+                <span class="text-xs font-mono {{ request()->routeIs('admin.songs.*') ? 'text-blue-200' : 'text-slate-400' }}">{{ $stats['total_songs'] ?? '' }}</span>
             </a>
 
-            <a href="#" class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-base font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors">
+            <a href="{{ route('admin.categories.index') }}" 
+               class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-base font-medium transition-colors {{ request()->routeIs('admin.categories.*') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200' }}">
                 <div class="flex items-center gap-3">
-                    <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <svg class="h-5 w-5 {{ request()->routeIs('admin.categories.*') ? 'text-white' : 'text-slate-400' }}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
                     </svg>
                     <span>Kategori</span>
                 </div>
-                <span class="text-xs text-slate-400 font-mono">{{ $stats['total_categories'] ?? '' }}</span>
+                <span class="text-xs font-mono {{ request()->routeIs('admin.categories.*') ? 'text-blue-200' : 'text-slate-400' }}">{{ $stats['total_categories'] ?? '' }}</span>
             </a>
 
             <a href="#" class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-base font-medium text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 transition-colors">
