@@ -45,6 +45,7 @@ test('admin can view songs catalog list', function () {
     $response->assertSee('Judul Lagu & Pencipta');
     $response->assertSee('Pria');
     $response->assertSee('Tambah Lagu');
+    $response->assertSee('URL Lagu');
 });
 
 test('admin can search songs by title or singer', function () {
@@ -135,6 +136,7 @@ test('song creation fails when required fields are missing', function () {
     $response->assertSessionHasErrors(['songtitle', 'songsinger', 'songcategory', 'songurl']);
     $response->assertSessionHasErrors([
         'songsinger' => 'Pencipta wajib diisi.',
+        'songurl' => 'URL lagu wajib diisi.',
     ]);
 });
 

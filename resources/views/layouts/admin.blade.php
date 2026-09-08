@@ -35,12 +35,6 @@
 
                 <h2 class="text-base font-semibold text-slate-200">@yield('page-title', 'Dashboard')</h2>
             </div>
-
-            @auth
-            <div class="text-sm font-medium text-slate-300">
-                {{ auth()->user()->name }}
-            </div>
-            @endauth
         </header>
 
         <!-- Content (File Terpisah) -->

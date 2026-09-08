@@ -53,7 +53,7 @@ class SongController extends Controller
             'songsinger.required' => 'Pencipta wajib diisi.',
             'songcategory.required' => 'Kategori lagu wajib dipilih.',
             'songcategory.exists' => 'Kategori yang dipilih tidak valid.',
-            'songurl.required' => 'URL / path file lagu wajib diisi.',
+            'songurl.required' => 'URL lagu wajib diisi.',
             'songnada.in' => 'Pilihan nada harus berupa pria, wanita, atau -.',
         ]);
 
@@ -79,7 +79,7 @@ class SongController extends Controller
             'songsinger.required' => 'Pencipta wajib diisi.',
             'songcategory.required' => 'Kategori lagu wajib dipilih.',
             'songcategory.exists' => 'Kategori yang dipilih tidak valid.',
-            'songurl.required' => 'URL / path file lagu wajib diisi.',
+            'songurl.required' => 'URL lagu wajib diisi.',
             'songnada.in' => 'Pilihan nada harus berupa pria, wanita, atau -.',
         ]);
 

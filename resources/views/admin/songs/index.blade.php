@@ -117,7 +117,7 @@
                         <th scope="col" class="px-6 py-4">Kategori</th>
                         <th scope="col" class="px-6 py-4 text-center">Nada</th>
                         <th scope="col" class="px-6 py-4 text-center">Durasi</th>
-                        <th scope="col" class="px-6 py-4">File / URL</th>
+                        <th scope="col" class="px-6 py-4">URL Lagu</th>
                         <th scope="col" class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -282,7 +282,7 @@
 
             <div>
                 <label for="create_songurl" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-                    File / URL Lagu <span class="text-rose-400">*</span>
+                    URL Lagu <span class="text-rose-400">*</span>
                 </label>
                 <input type="text" 
                        name="songurl" 
@@ -387,7 +387,7 @@
 
             <div>
                 <label for="edit_songurl" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
-                    File / URL Lagu <span class="text-rose-400">*</span>
+                    URL Lagu <span class="text-rose-400">*</span>
                 </label>
                 <input type="text" 
                        name="songurl" 
