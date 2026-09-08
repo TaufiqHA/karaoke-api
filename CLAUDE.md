@@ -1,4 +1,46 @@
 <laravel-boost-guidelines>
+=== planning rules ===
+
+# Planning First (Wajib Selalu Planning)
+
+- **Always Plan First**: Untuk setiap prompt atau permintaan baru dari pengguna, agen WAJIB membuat rencana implementasi (Implementation Plan) terlebih dahulu sebelum melakukan perubahan kode atau menjalankan aksi eksekusi.
+- **Research Phase**: Sebelum plan disetujui, agen hanya diperbolehkan melakukan analisis dan riset (read-only tools seperti membaca file, grep, cek database schema). Jangan memodifikasi file kode proyek sebelum plan disetujui.
+- **Persetujuan Pengguna**: Berhenti dan tunggu konfirmasi / persetujuan dari pengguna sebelum mengeksekusi perubahan kode apa pun.
+
+=== admin ui design system rules ===
+
+# Admin UI Design System (Wajib Konsisten & Seragam)
+
+Setiap pembuatan halaman baru, komponen, form, modal, tabel, atau pembaruan UI untuk panel admin WAJIB mengikuti standar Design System yang telah ditetapkan:
+
+1. **Prinsip Tampilan (Minimalis, Dark Mode, Aksen Biru)**:
+   - DILARANG menggunakan gradien mencolok (ungu/fuchsia/neon), glowing blur orbs dekoratif, atau teks penjelas/dekoratif berlebih.
+   - Background halaman utama: `bg-slate-950 text-slate-100`.
+   - Background container/kartu/tabel/modal/sidebar/header: `bg-slate-900`.
+   - Border: `border-slate-800` halus dan konsisten.
+   - Aksen Utama & Active State: `bg-blue-600 text-white`, hover: `hover:bg-blue-500`, active: `active:bg-blue-700`, focus: `focus:border-blue-500 focus:ring-1 focus:ring-blue-500`.
+   - Teks Utama / Judul / Nilai Angka: `text-white font-bold / font-semibold`.
+   - Teks Sekunder / Label: `text-slate-300` atau `text-slate-200`.
+   - Teks Redup / Caption / Tanggal: `text-slate-400`.
+   - Aksi Bahaya / Hapus: `text-slate-400 hover:text-rose-400 hover:bg-slate-800`.
+   - Alert Error: `bg-rose-500/10 border border-rose-500/20 text-rose-400`.
+   - Alert Sukses: `bg-emerald-500/10 border border-emerald-500/20 text-emerald-400`.
+
+2. **Skala Tipografi Proporsional**:
+   - Judul Halaman: `text-2xl font-bold text-white tracking-tight`.
+   - Sub-judul / Keterangan halaman: `text-sm text-slate-300 mt-1`.
+   - Header / Label Kartu: `text-sm font-semibold text-slate-300`.
+   - Angka Metrik: `text-3xl sm:text-4xl font-bold font-mono text-white`.
+   - Menu Navigasi Sidebar: `text-base font-medium` dengan ikon `h-5 w-5`.
+   - Input Form & Tombol Standar: `text-sm font-medium`.
+
+3. **Layout & Arsitektur Konten Penuh (Full-Width)**:
+   - Konten area admin WAJIB selalu membentang penuh menggunakan `w-full` (DILARANG membatasi dengan `max-w-*` pada container halaman admin).
+   - Setiap halaman admin baru WAJIB meng-extend layout utama: `@extends('layouts.admin')`.
+   - Tetapkan judul halaman menggunakan `@section('page-title', 'Nama Halaman')`.
+   - Masukkan konten halaman di dalam `@section('content')`.
+   - Pisahkan komponen yang dapat digunakan ulang (seperti modal, form, tabel, sidebar) di file view/partial terpisah.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines
