@@ -122,10 +122,10 @@ test('authenticated admin visiting login page is redirected to dashboard', funct
     $response->assertRedirect('/admin/dashboard');
 });
 
-test('root route redirects authenticated admin to dashboard and shows welcome for guest', function () {
+test('root route redirects authenticated admin to dashboard and redirects guest to login', function () {
     // Guest
     $guestResponse = $this->get('/');
-    $guestResponse->assertStatus(200);
+    $guestResponse->assertRedirect('/login');
 
     // Admin
     $admin = User::factory()->admin()->create();

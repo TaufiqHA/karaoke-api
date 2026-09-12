@@ -15,7 +15,7 @@ Route::get('/', function () {
         return redirect()->route('admin.dashboard');
     }
 
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::middleware('guest')->group(function () {
