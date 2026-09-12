@@ -66,8 +66,9 @@
 
     <!-- Search & Filter Bar -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full max-w-2xl">
-            <div class="relative flex-1">
+        <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-2xl">
+            <!-- Search Text -->
+            <div class="relative w-full sm:flex-1">
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -77,13 +78,14 @@
                        name="search" 
                        value="{{ request('search') }}" 
                        placeholder="Cari nama, username, atau email..." 
-                       class="block w-full h-11 rounded-xl border border-slate-800 bg-slate-900 pl-11 pr-4 text-sm text-white placeholder-slate-400 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
+                       class="block w-full h-12 rounded-xl border border-slate-800 bg-slate-900 pl-12 pr-4 text-sm sm:text-base text-white placeholder-slate-400 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
             </div>
 
-            <div class="w-full sm:w-44">
+            <!-- Role Filter -->
+            <div class="w-full sm:w-44 shrink-0">
                 <select name="role" 
                         onchange="this.form.submit()" 
-                        class="block w-full h-11 rounded-xl border border-slate-800 bg-slate-900 px-3.5 text-sm text-white focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
+                        class="block w-full h-12 rounded-xl border border-slate-800 bg-slate-900 px-3.5 text-sm text-white focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors cursor-pointer">
                     <option value="">Semua Peran</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->value }}" {{ request('role') === $role->value ? 'selected' : '' }}>
@@ -93,9 +95,7 @@
                 </select>
             </div>
 
-            <button type="submit" class="sm:hidden rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 transition-colors">
-                Cari
-            </button>
+            <button type="submit" class="hidden">Cari</button>
         </form>
 
         @if(request('search') || request('role'))
