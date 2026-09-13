@@ -39,4 +39,14 @@ class Song extends Model
     {
         return $this->belongsTo(Category::class, 'songcategory', 'songcategoryid');
     }
+
+    /**
+     * Get the nada associated with the song.
+     *
+     * @return BelongsTo<Nada, $this>
+     */
+    public function nada(): BelongsTo
+    {
+        return $this->belongsTo(Nada::class, 'songnada', 'nada');
+    }
 }

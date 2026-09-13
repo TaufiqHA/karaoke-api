@@ -11,7 +11,16 @@
             <h1 class="text-2xl font-bold text-white tracking-tight">Katalog Lagu</h1>
             <p class="text-sm text-slate-300 mt-1">Kelola daftar katalog lagu karaoke dan file pemutar</p>
         </div>
-        <div>
+        <div class="flex items-center gap-3">
+            <button type="button" 
+                    onclick="openCreateNadaModal()" 
+                    class="inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white active:bg-slate-700 transition-colors shadow-sm">
+                <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Tambah Nada</span>
+            </button>
+
             <button type="button" 
                     onclick="openCreateModal()" 
                     class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 active:bg-blue-700 transition-colors shadow-sm">
@@ -137,7 +146,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center text-xs text-slate-300">
-                                <span class="capitalize">{{ $song->songnada ?? '—' }}</span>
+                                <span class="capitalize">{{ ucfirst($song->songnada ?? '—') }}</span>
                             </td>
                             <td class="px-6 py-4 text-center font-mono text-xs text-slate-300">
                                 {{ $song->songduration ?? '—' }}
@@ -263,8 +272,9 @@
                             id="create_songnada" 
                             class="block w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
                         <option value="-">-</option>
-                        <option value="pria">Pria</option>
-                        <option value="wanita">Wanita</option>
+                        @foreach ($nadas ?? [] as $nadaItem)
+                            <option value="{{ $nadaItem->nada }}">{{ ucfirst($nadaItem->nada) }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -369,8 +379,9 @@
                             id="edit_songnada" 
                             class="block w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5 text-sm text-white focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
                         <option value="-">-</option>
-                        <option value="pria">Pria</option>
-                        <option value="wanita">Wanita</option>
+                        @foreach ($nadas ?? [] as $nadaItem)
+                            <option value="{{ $nadaItem->nada }}">{{ ucfirst($nadaItem->nada) }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -446,7 +457,63 @@
     </div>
 </div>
 
+<!-- Modalbox Tambah Nada -->
+<div id="createNadaModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 hidden" onclick="closeCreateNadaModal()">
+    <div class="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl space-y-5" onclick="event.stopPropagation()">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+                <h3 class="text-lg font-bold text-white tracking-tight">Tambah Nada Baru</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Tambahkan pilihan nada untuk katalog lagu</p>
+            </div>
+            <button type="button" 
+                    onclick="closeCreateNadaModal()" 
+                    class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                    aria-label="Tutup modal">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form method="POST" action="{{ route('admin.nadas.store') }}" class="space-y-4">
+            @csrf
+            <div>
+                <label for="create_nada_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                    Nama Nada <span class="text-rose-400">*</span>
+                </label>
+                <input type="text" 
+                       name="nada" 
+                       id="create_nada_name" 
+                       required 
+                       placeholder="Contoh: pria, wanita, duet, anak"
+                       class="block w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-400 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-colors">
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" 
+                        onclick="closeCreateNadaModal()" 
+                        class="rounded-xl border border-slate-800 px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                    Batal
+                </button>
+                <button type="submit" 
+                        class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 active:bg-blue-700 transition-colors shadow-sm">
+                    Simpan Nada
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openCreateNadaModal() {
+        document.getElementById('createNadaModal').classList.remove('hidden');
+        document.getElementById('create_nada_name').focus();
+    }
+
+    function closeCreateNadaModal() {
+        document.getElementById('createNadaModal').classList.add('hidden');
+    }
+
     function openCreateModal() {
         document.getElementById('createModal').classList.remove('hidden');
         document.getElementById('create_songtitle').focus();
@@ -488,6 +555,7 @@
 
     window.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
+            closeCreateNadaModal();
             closeCreateModal();
             closeEditModal();
             closeDeleteModal();

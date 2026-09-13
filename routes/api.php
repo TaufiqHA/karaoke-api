@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\NadaController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\UserController;
@@ -38,6 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users/{user}', [UserController::class, 'show']);
         Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        Route::get('/nadas', [NadaController::class, 'index']);
+        Route::post('/nadas', [NadaController::class, 'store']);
+        Route::get('/nadas/{nada}', [NadaController::class, 'show']);
+        Route::match(['put', 'patch'], '/nadas/{nada}', [NadaController::class, 'update']);
+        Route::delete('/nadas/{nada}', [NadaController::class, 'destroy']);
 
         Route::get('/settings', [SettingController::class, 'index']);
         Route::post('/settings', [SettingController::class, 'save']);

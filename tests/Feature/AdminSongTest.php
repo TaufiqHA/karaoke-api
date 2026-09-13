@@ -45,6 +45,7 @@ test('admin can view songs catalog list', function () {
     $response->assertSee('Judul Lagu & Pencipta');
     $response->assertSee('Pria');
     $response->assertSee('Tambah Lagu');
+    $response->assertSee('Tambah Nada');
     $response->assertSee('URL Lagu');
 });
 

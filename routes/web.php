@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NadaController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SongController;
@@ -45,6 +46,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/', [SongController::class, 'store'])->name('store');
         Route::match(['put', 'patch'], '/{song}', [SongController::class, 'update'])->name('update');
         Route::delete('/{song}', [SongController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('nadas')->name('nadas.')->group(function () {
+        Route::get('/', [NadaController::class, 'index'])->name('index');
+        Route::post('/', [NadaController::class, 'store'])->name('store');
+        Route::get('/{nada}', [NadaController::class, 'show'])->name('show');
+        Route::match(['put', 'patch'], '/{nada}', [NadaController::class, 'update'])->name('update');
+        Route::delete('/{nada}', [NadaController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('users')->name('users.')->group(function () {
