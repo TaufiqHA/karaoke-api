@@ -24,10 +24,21 @@ class Setting extends Model
         'applicationcompany',
         'applicationname',
         'applicationads1',
+        'applicationads1type',
+        'applicationads1unit',
+        'applicationads1active',
+        'applicationads1clickurl',
         'applicationads2',
+        'applicationads2type',
+        'applicationads2unit',
+        'applicationads2active',
+        'applicationads2clickurl',
         'applicationadsactive',
         'applicationadsbottom',
+        'applicationadsbottomtype',
+        'applicationadsbottomunit',
         'applicationadsbottomactive',
+        'applicationadsbottomclickurl',
     ];
 
     /**

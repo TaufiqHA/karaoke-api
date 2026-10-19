@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdSettingController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -67,6 +68,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/', [ProfileController::class, 'edit'])->name('edit');
         Route::patch('/', [ProfileController::class, 'update'])->name('update');
         Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    });
+
+    // Menu Iklan — konfigurasi banner & AdMob (dikelola terpisah dari Pengaturan).
+    Route::prefix('ads')->name('ads.')->group(function () {
+        Route::get('/', [AdSettingController::class, 'edit'])->name('edit');
+        Route::match(['put', 'patch'], '/', [AdSettingController::class, 'update'])->name('update');
     });
 
     Route::prefix('settings')->name('settings.')->group(function () {

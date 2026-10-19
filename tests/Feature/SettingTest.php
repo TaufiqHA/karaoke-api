@@ -235,3 +235,100 @@ test('admin can delete setting by id', function () {
         'applicationid' => $setting->applicationid,
     ]);
 });
+
+test('admin can create settings with admob ad configuration via api', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $response = $this->postJson('/api/admin/settings', [
+        'applicationcompany' => 'PT Karaoke Digital',
+        'applicationname' => 'Karaoke AdMob',
+        'applicationads1type' => 'admob_native',
+        'applicationads1unit' => 'ca-app-pub-1234567890123456/1111111111',
+        'applicationads1active' => 'Y',
+        'applicationads1clickurl' => 'https://example.com/slot-1',
+        'applicationads2type' => 'admob_banner',
+        'applicationads2unit' => 'ca-app-pub-1234567890123456/3333333333',
+        'applicationads2active' => 'N',
+        'applicationads2clickurl' => 'https://example.com/slot-2',
+        'applicationadsbottomtype' => 'admob_interstitial',
+        'applicationadsbottomunit' => 'ca-app-pub-1234567890123456/2222222222',
+        'applicationadsbottomactive' => 'Y',
+        'applicationadsbottomclickurl' => 'https://example.com/footer',
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'data' => [
+                'applicationads1type' => 'admob_native',
+                'applicationads1unit' => 'ca-app-pub-1234567890123456/1111111111',
+                'applicationads1active' => 'Y',
+                'applicationads1clickurl' => 'https://example.com/slot-1',
+                'applicationads2type' => 'admob_banner',
+                'applicationads2unit' => 'ca-app-pub-1234567890123456/3333333333',
+                'applicationads2active' => 'N',
+                'applicationads2clickurl' => 'https://example.com/slot-2',
+                'applicationadsbottomtype' => 'admob_interstitial',
+                'applicationadsbottomunit' => 'ca-app-pub-1234567890123456/2222222222',
+                'applicationadsbottomactive' => 'Y',
+                'applicationadsbottomclickurl' => 'https://example.com/footer',
+            ],
+        ]);
+});
+
+test('legacy aggregate ad status is applied to both main slots via api', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $response = $this->postJson('/api/admin/settings', [
+        'applicationcompany' => 'PT Karaoke Digital',
+        'applicationname' => 'Karaoke Legacy',
+        'applicationadsactive' => 'N',
+    ]);
+
+    $response->assertStatus(201);
+
+    $setting = Setting::first();
+    expect($setting->applicationadsactive)->toBe('N')
+        ->and($setting->applicationads1active)->toBe('N')
+        ->and($setting->applicationads2active)->toBe('N');
+});
+
+test('per-slot ad status is aggregated into legacy main status via api', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $setting = Setting::factory()->create();
+
+    $response = $this->putJson("/api/admin/settings/{$setting->applicationid}", [
+        'applicationads1active' => 'N',
+        'applicationads2active' => 'N',
+    ]);
+
+    $response->assertStatus(200);
+
+    $setting->refresh();
+    expect($setting->applicationads1active)->toBe('N')
+        ->and($setting->applicationads2active)->toBe('N')
+        ->and($setting->applicationadsactive)->toBe('N');
+});
+
+test('api settings rejects invalid ad type, click url, and ad unit', function () {
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $response = $this->postJson('/api/admin/settings', [
+        'applicationcompany' => 'PT Karaoke Digital',
+        'applicationname' => 'Karaoke Invalid',
+        'applicationads1type' => 'unknown_type',
+        'applicationads1clickurl' => 'bukan-url',
+        'applicationads1unit' => str_repeat('a', 256),
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors([
+            'applicationads1type',
+            'applicationads1clickurl',
+            'applicationads1unit',
+        ]);
+});
